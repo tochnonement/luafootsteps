@@ -39,6 +39,8 @@ LuaFootsteps.panels = LuaFootsteps.panels or {}
 local LuaFootsteps = LuaFootsteps
 local CONVAR_ENABLED = CreateClientConVar('cl_luafootsteps_enabled', '1', true)
 local CONVAR_ID = CreateClientConVar('cl_luafootsteps_pack', 'default', true)
+local CONVAR_SV_FORCE = CreateConVar('sv_luafootsteps_force_enabled', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, '', 0, 1)
+local CONVAR_SV_PACK = CreateConVar('sv_luafootsteps_force_pack', 'default', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 
 --[[------------------------------
 Returns the current's pack which is active
@@ -46,6 +48,12 @@ Returns the current's pack which is active
 --------------------------------]]
 function LuaFootsteps:GetCurrentPackID()
     local id = CONVAR_ID:GetString()
+
+    -- server override
+    if (CONVAR_SV_FORCE:GetBool()) then
+        id = CONVAR_SV_PACK:GetString()
+    end
+
     if (self.packs[id]) then
         return id
     end
@@ -234,6 +242,17 @@ do
                     update()
                 end
             end)
+
+        end)
+
+        spawnmenu.AddToolMenuOption( 'Utilities', 'LuaFootsteps', 'admin', 'Admin / Server', '', '', function( panel )
+            panel:Clear()
+            panel:CheckBox('Force players to use pack', 'sv_luafootsteps_force_enabled')
+            local combo, label = panel:ComboBox('Selected pack', 'sv_luafootsteps_force_pack')
+    
+            for _, pack in pairs(LuaFootsteps.packs) do
+                combo:AddChoice(pack.Name, pack.ID)
+            end
 
         end)
     end)

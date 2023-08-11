@@ -7,6 +7,9 @@ Email: tochnonement@gmail.com
 
 --]]
 
+local CONVAR_SV_FORCE = CreateConVar('sv_luafootsteps_force_enabled', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, '', 0, 1)
+local CONVAR_SV_PACK = CreateConVar('sv_luafootsteps_force_pack', 'default', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+
 do
     local files = file.Find('luafootstep_packs/*', 'LUA')
     for _, name in ipairs(files) do
@@ -25,10 +28,5 @@ hook.Add('PlayerFootstep', 'LuaFoosteps.SupportSinglePlayer', function(ply, pos,
         net.Send(ply)
 
         return true
-    else
-        -- ply:EmitSound('luafootsteps/scp/concrete1.wav')
-        -- return true
     end
 end)
-
--- Entity(2):SetPos(Entity(1):GetPos())
